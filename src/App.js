@@ -8,6 +8,8 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';//Need to import a few things for the router
+import Create from './components/create';
+import Read from './components/read';//imports the components
 function App() {
   return (
     <BrowserRouter>
@@ -27,8 +29,8 @@ function App() {
         <Routes>
           {/* when we go to this path, show this component */}
           <Route path='/' element={<Content></Content>}></Route>
-          <Route path='/create' element={<Header></Header>}></Route>
-          <Route path='/read' element={<Footer></Footer>}></Route>
+          <Route path='/read' element={<Read></Read>}></Route>
+          <Route path='/create' element={<Create></Create>}></Route>
         </Routes>
 
         {/* call the components to display on the app */}
