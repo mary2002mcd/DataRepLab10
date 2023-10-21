@@ -1,4 +1,5 @@
 import { Card } from "react-bootstrap";
+import { CardBody } from 'react-bootstrap';
 
 function BookItems(props) {
     return (
