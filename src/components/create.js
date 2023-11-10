@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 function Create() {
     //The React useState Hook allows us to track state in a function component.
@@ -9,6 +10,16 @@ function Create() {
         e.preventDefault();
         //write to the console
         console.log("Title: " + title + " Cover: " + thumbnailUrl + " Author: " + authors);
+
+        const book = {
+            title:title,
+            cover:thumbnailUrl,
+            author:authors
+        }
+        //makes a http request
+        axios.post('http://localhost:4000/api/book',book)
+        .then()//invoke whats in here
+        .catch();//if an exception
     }
 
 
