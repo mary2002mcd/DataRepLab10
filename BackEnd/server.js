@@ -13,64 +13,59 @@ app.use(function (req, res, next) {
 });
 //parse the body of a http request
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 //localhost:4000
 app.get('/', (req, res) => {
     res.send('hello world')
 })
 
-app.post('/api/book', (req,res)=>{
+// getting-started.js
+const mongoose = require('mongoose');
+
+main().catch(err => console.log(err));
+
+async function main() {
+    await mongoose.connect('mongodb+srv://admin:admin@cluster0.2qikblf.mongodb.net/DB14?retryWrites=true&w=majority');
+
+    // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
+}
+
+const bookSchema = new mongoose.Schema({
+    title: String,
+    cover: String,
+    author: String
+})
+//add to the bookSchema
+const bookModel = mongoose.model('my_books', bookSchema);
+
+app.post('/api/book', (req, res) => {
     console.log(req.body);
-    res.send("Data Recieved");
+
+    bookModel.create({
+        title: req.body.title,
+        cover: req.body.cover,
+        author: req.body.author
+    })
+        .then(() => { res.send("Data Recieved") })
+        .catch(() => { res.send("Data NOT Recieved")});
+
 })
 
-app.get('/api/books', (req, res) => {
-    //the data for the app
-    const books = [
-        {
-            "title": "Learn Git in a Month of Lunches",
-            "isbn": "1617292419",
-            "pageCount": 0,
-            "thumbnailUrl":
-                "https://s3.amazonaws.com/AKIAJC5RLADLUMVRPFDQ.book-thumb-images/umali.jpg", "status": "MEAP",
-            "authors": ["Rick Umali"],
-            "categories": []
-        },
-        {
-            "title": "MongoDB in Action, Second Edition",
-            "isbn": "1617291609",
-            "pageCount": 0,
-            "thumbnailUrl":
-                "https://s3.amazonaws.com/AKIAJC5RLADLUMVRPFDQ.book-thumb-images/banker2.jpg",
-            "status": "MEAP",
-            "authors": [
-                "Kyle Banker",
-                "Peter Bakkum",
-                "Tim Hawkins",
-                "Shaun Verch",
-                "Douglas Garrett"
-            ],
-            "categories": []
+//get all the books
+app.get('/api/books', async(req, res) => {
+    
+    let books = await bookModel.find({});
+    res.json(books);
+   
+})
+//get the book with a specific id
+app.get('/api/book/:identifier',async(req,res)=>{
+    console.log(req.params.identifier);
 
-        },
-        {
-            "title": "Getting MEAN with Mongo, Express, Angular, and Node",
-            "isbn": "1617292036",
-            "pageCount": 0,
-            "thumbnailUrl":
-                "https://s3.amazonaws.com/AKIAJC5RLADLUMVRPFDQ.book-thumb-images/sholmes.jpg",
-            "status": "MEAP",
-            "authors": ["Simon Holmes"],
-            "categories": []
-        }
-    ]
-    //array - called in read.js
-    res.json({
-        myBooks: books,
-        "Message": "Some Information",
-        "Disclaimer": "Hello World"
-    })
+    let book = await bookModel.findById(req.params.identifier);
+
+    res.send(book);
 })
 
 app.listen(port, () => {

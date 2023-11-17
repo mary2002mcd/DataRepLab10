@@ -6,7 +6,7 @@ function Books(props){
     return props.myBooks.map(
         //book is an argument
         (book)=>{
-            return <BookItems myBook={book} key={book.isbn}></BookItems>
+            return <BookItems myBook={book} key={book._id}></BookItems>
         }
     );
 }
