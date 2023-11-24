@@ -23,14 +23,14 @@ app.get('/', (req, res) => {
 // getting-started.js
 const mongoose = require('mongoose');
 
-main().catch(err => console.log(err));
+main().catch(err => console.log(err));//catch error
 
 async function main() {
     await mongoose.connect('mongodb+srv://admin:admin@cluster0.2qikblf.mongodb.net/DB14?retryWrites=true&w=majority');
 
     // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
 }
-
+//this is how you create a a Schema
 const bookSchema = new mongoose.Schema({
     title: String,
     cover: String,
@@ -39,16 +39,24 @@ const bookSchema = new mongoose.Schema({
 //add to the bookSchema
 const bookModel = mongoose.model('my_books', bookSchema);
 
+//method for updated the details of the book - async to make sure book is not null
+app.put('/api/book/:id', async(req, res)=>{
+    console.log("update: "+req.params.id);
+
+    let book = await bookModel.findByIdAndUpdate(req.params.id, req.body, {new:true});
+    res.send(book);//send back updated book
+})
+
 app.post('/api/book', (req, res) => {
     console.log(req.body);
 
-    bookModel.create({
+    bookModel.create({//this is how you create a bookModel
         title: req.body.title,
         cover: req.body.cover,
         author: req.body.author
     })
         .then(() => { res.send("Data Recieved") })
-        .catch(() => { res.send("Data NOT Recieved")});
+        .catch(() => { res.send("Data NOT Recieved")});//if error is cought
 
 })
 
@@ -63,9 +71,9 @@ app.get('/api/books', async(req, res) => {
 app.get('/api/book/:identifier',async(req,res)=>{
     console.log(req.params.identifier);
 
-    let book = await bookModel.findById(req.params.identifier);
+    let book = await bookModel.findById(req.params.identifier);//make it wait for the information
 
-    res.send(book);
+    res.send(book);//the response is the book
 })
 
 app.listen(port, () => {
