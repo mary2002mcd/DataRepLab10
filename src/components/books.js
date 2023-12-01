@@ -6,7 +6,7 @@ function Books(props){
     return props.myBooks.map(
         //book is an argument
         (book)=>{
-            return <BookItems myBook={book} key={book._id}></BookItems>
+            return <BookItems myBook={book} key={book._id} Reload={()=>{props.ReloadData()}}></BookItems>//ReloadData is from the read component
         }
     );
 }

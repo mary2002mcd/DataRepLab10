@@ -39,6 +39,14 @@ const bookSchema = new mongoose.Schema({
 //add to the bookSchema
 const bookModel = mongoose.model('my_books', bookSchema);
 
+//server logic for delete -- params of the url
+app.delete('/api/book/:id', async (req, res)=>{
+    console.log("Delete: "+ req.params.id)
+    //local variable book - everytime you want to interact with the database you use the book model
+    let book = await bookModel.findByIdAndDelete(req.params.id);
+    res.send(book);//async so wont proceed to this line until the previous one is finished
+})
+
 //method for updated the details of the book - async to make sure book is not null
 app.put('/api/book/:id', async(req, res)=>{
     console.log("update: "+req.params.id);
