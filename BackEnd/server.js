@@ -2,15 +2,23 @@ const express = require('express')
 const app = express()
 const port = 4000
 const cors = require('cors');
+
+// Serve the static files from the React app
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../build')));
+app.use('/static', express.static(path.join(__dirname, 'build//static')));
+
+
 //need to install cors to bypass the errors
-app.use(cors());
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.header("Access-Control-Allow-Headers",
-        "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
+//
+// app.use(cors());
+// app.use(function (req, res, next) {
+//     res.header("Access-Control-Allow-Origin", "*");
+//     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+//     res.header("Access-Control-Allow-Headers",
+//         "Origin, X-Requested-With, Content-Type, Accept");
+//     next();
+// });
 //parse the body of a http request
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -40,18 +48,18 @@ const bookSchema = new mongoose.Schema({
 const bookModel = mongoose.model('my_books', bookSchema);
 
 //server logic for delete -- params of the url
-app.delete('/api/book/:id', async (req, res)=>{
-    console.log("Delete: "+ req.params.id)
+app.delete('/api/book/:id', async (req, res) => {
+    console.log("Delete: " + req.params.id)
     //local variable book - everytime you want to interact with the database you use the book model
     let book = await bookModel.findByIdAndDelete(req.params.id);
     res.send(book);//async so wont proceed to this line until the previous one is finished
 })
 
 //method for updated the details of the book - async to make sure book is not null
-app.put('/api/book/:id', async(req, res)=>{
-    console.log("update: "+req.params.id);
+app.put('/api/book/:id', async (req, res) => {
+    console.log("update: " + req.params.id);
 
-    let book = await bookModel.findByIdAndUpdate(req.params.id, req.body, {new:true});
+    let book = await bookModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.send(book);//send back updated book
 })
 
@@ -64,25 +72,31 @@ app.post('/api/book', (req, res) => {
         author: req.body.author
     })
         .then(() => { res.send("Data Recieved") })
-        .catch(() => { res.send("Data NOT Recieved")});//if error is cought
+        .catch(() => { res.send("Data NOT Recieved") });//if error is cought
 
 })
 
 //get all the books
-app.get('/api/books', async(req, res) => {
-    
+app.get('/api/books', async (req, res) => {
+
     let books = await bookModel.find({});
     res.json(books);
-   
+
 })
 //get the book with a specific id
-app.get('/api/book/:identifier',async(req,res)=>{
+app.get('/api/book/:identifier', async (req, res) => {
     console.log(req.params.identifier);
 
     let book = await bookModel.findById(req.params.identifier);//make it wait for the information
 
     res.send(book);//the response is the book
 })
+
+// Handles any requests that don't match the ones above
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname + '/../build/index.html'));
+});
+
 
 app.listen(port, () => {
     console.log(`example app listening on port ${port}`)
